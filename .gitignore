@@ -1,3 +1,5 @@
 config.py
 0.1
 *.e4p
+ets
+.eric6project/
