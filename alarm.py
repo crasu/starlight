@@ -1,7 +1,7 @@
 from machine import Timer
 import time
 
-INTERVAL = 1e6
+INTERVAL = 1000000
 
 class AlarmHandler:
     i=0
@@ -33,7 +33,7 @@ class AlarmHandler:
         self.i=self.i+1
         self.i=self.i % 100
 
-        self.pwm(i)
+        self.pwm(self.i)
 
     @classmethod
     def disable(self):
