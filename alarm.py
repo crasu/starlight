@@ -1,7 +1,7 @@
 from machine import Timer
 import time
 
-FREQ = 1.0
+INTERVAL = 1e6
 
 class AlarmHandler:
     i=0
@@ -48,4 +48,4 @@ class AlarmHandler:
         self.duty_cycle[pin] = value
 
 
-alarm = Timer.Alarm(AlarmHandler.handler, us=1/FREQ*1e6, periodic=True)
+alarm = Timer.Alarm(AlarmHandler.handler, us=INTERVAL, periodic=True)
