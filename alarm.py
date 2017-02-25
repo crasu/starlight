@@ -2,7 +2,7 @@ from machine import Timer
 import time
 import machine
 
-INTERVAL = 50000
+INTERVAL = 1000
 
 class AlarmHandler:
     i=0
@@ -12,19 +12,7 @@ class AlarmHandler:
 
     @classmethod
     def pwm(self, i):
-        duty_cycle = self.duty_cycle
-
-        for pin in duty_cycle:
-            on = False
-            if duty_cycle[pin] == 0 or duty_cycle[pin] == 100:
-                on = duty_cycle[pin] == 100
-            else:
-                if duty_cycle[pin] < 50:
-                    on = i % (100//duty_cycle[pin]) == 0
-                else:
-                    on = i % (100//(100-duty_cycle[pin])) != 0
-            #print("Pin: {} is {} for i={}".format(pin, on, i))
-            self.p_out[pin](on)
+        pass
 
     @classmethod
     def handler(self, alarm):
