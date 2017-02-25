@@ -10,9 +10,6 @@ s = socket.socket()
 s.bind(addr)
 s.listen(1)
 
-PWM_CHANNEL = 0
-pwm = machine.PWM(PWM_CHANNEL, frequency=5000)
-
 print('listening on', addr)
 
 def parse_request(req):
@@ -24,7 +21,7 @@ def parse_request(req):
         return ("", "")
 
 def parse_url(url):
-    m = re.match("/(P[0-9]+)/([0-9]+)", url)
+    m = re.match("/(P[0-9]+)/([0-1])", url)
     if m:
         return (m.group(1), m.group(2))
     else:
@@ -51,7 +48,8 @@ while True:
     if method == 'GET':
         (pin, level) = parse_url(url)
         if pin in PINS:
-            pwm_c = pwm.channel(PWM_CHANNEL, pin=pin, duty_cycle=float(level)/100)
+            p_out = machine.Pin(pin, mode=machine.Pin.OUT)
+            p_out.value(int(level))
             print("Pin {} set to level {}".format(pin, level))
             c.send("HTTP/1.0 200 OK\n\nPin {} set to level {}\n\n".format(pin, level))
         else:
