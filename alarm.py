@@ -20,7 +20,7 @@ class AlarmHandler:
                 if duty_cycle[pin] < 50:
                     on = i % (100/duty_cycle[pin]) == 0
                 else:
-                    on = i % (100/(100-duty_cycle[pin])) == 0
+                    on = i % (100/(100-duty_cycle[pin])) != 0
             print("Pin: {} is {}".format(pin, on))
 
     @classmethod
