@@ -2,15 +2,7 @@ import machine
 import socket
 import re
 
-PINS=["P" + str(i) for i in range(0, 13)]
-
-addr = socket.getaddrinfo('0.0.0.0', 80)[0][-1]
-
-s = socket.socket()
-s.bind(addr)
-s.listen(1)
-
-print('listening on', addr)
+PINS=["P" + str(i) for i in range(8, 13)]
 
 def parse_request(req):
     m = re.match("([^\s]+) ([^\s]+) HTTP/.*\r\n", req)
@@ -35,28 +27,35 @@ def process_header(c):
             break
         print("H:{}".format(header))
 
+def start():
+    addr = socket.getaddrinfo('0.0.0.0', 80)[0][-1]
 
-while True:
-    c, addr = s.accept()
-    print('client connected from', addr)
-    req = c.readline()
-    process_header(c)
+    s = socket.socket()
+    s.bind(addr)
+    s.listen(1)
 
-    (method, url) = parse_request(req)
-    print("req: {} url: {}".format(method, url))
+    print('listening on', addr)
+    while True:
+        c, addr = s.accept()
+        print('client connected from', addr)
+        req = c.readline()
+        process_header(c)
 
-    if method == 'GET':
-        (pin, level) = parse_url(url)
-        if pin in PINS:
-            p_out = machine.Pin(pin, mode=machine.Pin.OUT)
-            p_out.value(int(level))
-            print("Pin {} set to level {}".format(pin, level))
-            c.send("HTTP/1.0 200 OK\n\nPin {} set to level {}\n\n".format(pin, level))
+        (method, url) = parse_request(req)
+        print("req: {} url: {}".format(method, url))
+
+        if method == 'GET':
+            (pin, level) = parse_url(url)
+            if pin in PINS:
+                p_out = machine.Pin(pin, mode=machine.Pin.OUT)
+                p_out.value(int(level))
+                print("Pin {} set to level {}".format(pin, level))
+                c.send("HTTP/1.0 200 OK\n\nPin {} set to level {}\n\n".format(pin, level))
+            else:
+                c.send("HTTP/1.0 200 OK\n\nPin \"{}\" unknown\n".format(pin, level))
+                
+
         else:
-            c.send("HTTP/1.0 200 OK\n\nPin \"{}\" unknown\n".format(pin, level))
-            
+            c.send("HTTP/1.0 200 OK\n\nNo pin set\n")
 
-    else:
-        c.send("HTTP/1.0 200 OK\n\nNo pin set\n")
-
-    c.close()
+        c.close()
