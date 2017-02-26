@@ -9,8 +9,8 @@ class AlarmHandler:
     enable = True
 
     @classmethod
-    def pwm(self, i, duty_cycle):
-        duty_cycle = self.duty_cycle
+    def pwm(cls, i, duty_cycle):
+        duty_cycle = cls.duty_cycle
 
         for pin in duty_cycle:
             if duty_cycle[pin] == 0 or duty_cycle[pin] == 100:
@@ -24,28 +24,28 @@ class AlarmHandler:
             print("Pin: {} is {}".format(pin, on))
 
     @classmethod
-    def handler(self, alarm):
-        if self.enable == False:
+    def handler(cls, alarm):
+        if cls.enable == False:
             print("alarm disabled")
             alarm.__del__()
             return
 
-        self.i=self.i+1
-        self.i=self.i % 100
+        cls.i=cls.i+1
+        cls.i=cls.i % 100
 
-        self.pwm(self.i)
-
-    @classmethod
-    def disable(self):
-        self.enable = False
+        cls.pwm(cls.i)
 
     @classmethod
-    def enable(self):
-        self.enable = True
+    def disable(cls):
+        cls.enable = False
 
     @classmethod
-    def set_duty_cycle(self, pin, value):
-        self.duty_cycle[pin] = value
+    def enable(cls):
+        cls.enable = True
+
+    @classmethod
+    def set_duty_cycle(cls, pin, value):
+        cls.duty_cycle[pin] = value
 
 
 alarm = Timer.Alarm(AlarmHandler.handler, us=INTERVAL, periodic=True)
