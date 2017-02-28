@@ -1,51 +1,44 @@
 import machine
 import _thread
-import time
+import utime
 
 from server import PINS
 
-class Pwm:
-    i=0
-    enable=True
-    output = { pin: machine.Pin(pin, mode=machine.Pin.OUT) for pin in PINS }
-    duty_cycle = {}
-    
-    def __init__(self):
-        pass
+divider = 5
+enable=True
+outputs = { pin: machine.Pin(pin, mode=machine.Pin.OUT) for pin in PINS }
+for output in outputs:
+    output = False
 
-    @classmethod
-    def run(cls):
-        while cls.enable:
-            cls.i = (cls.i + 1) % 100
-            duty_cycle = cls.duty_cycle
+duty_cycle = {}
 
-            for pin in duty_cycle:
-                on = False
-                if duty_cycle[pin] <= 0 or duty_cycle[pin] >= 100:
-                    on = duty_cycle[pin] >= 100
+def run():
+    global enable
+    i = 0
+    while enable:
+        i = (i + 1) % 10000
+        for pin in duty_cycle:
+            on = False
+
+            if duty_cycle[pin] <= 0 or duty_cycle[pin] >= 100:
+                on = duty_cycle[pin] >= 100
+            else:
+                if duty_cycle[pin] < 50:
+                    on = i % (100//duty_cycle[pin]) == 0
                 else:
-                    if duty_cycle[pin] < 50:
-                        on = cls.i % (100/duty_cycle[pin]) == 0
-                    else:
-                        on = cls.i % (100/(100-duty_cycle[pin])) != 0
-                cls.output[pin] = on
-        print("terminating")
-            
+                    on = i % (100//(100-duty_cycle[pin])) != 0
 
-    @classmethod
-    def stop(cls):
-        cls.enable = False
-    
-    @classmethod
-    def set_duty_cycle(cls, pin, value):
-        cls.duty_cycle[pin] = value
+            outputs[pin](on)
+
+    print("terminating")
 
 def start():
-    _thread.start_new_thread(Pwm.run, ())
-    Pwm.duty_cycle['P9'] = 20
-    print("sleep")
-    time.sleep(5)
-    print("cycle 90")
-    Pwm.duty_cycle['P9'] = 90
-
-
+    global enable
+    enable = True
+    _thread.start_new_thread(run, ())
+    for j in range(1,101,10):
+        print(j)
+        duty_cycle['P9'] = j
+        utime.sleep_ms(3000)
+    enable = False
+    utime.sleep(3)
