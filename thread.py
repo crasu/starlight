@@ -28,8 +28,6 @@ def run():
                 else:
                     on = i % (100//(100-duty_cycle[pin])) != 0
 
-            outputs[pin](on)
-
     print("terminating")
 
 def start():
