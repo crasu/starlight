@@ -4,13 +4,15 @@ import re
 import select
 import utime
 import machine
+import pycom
 
-PINS=["P" + str(i) for i in range(4, 13)]
+PINS=["P" + str(i) for i in range(2, 13)]
 
 outputs = { pin: machine.Pin(pin, mode=machine.Pin.OUT) for pin in PINS }
 for output in outputs:
     output = False
 
+pycom.heartbeat(False)
 
 def parse_request(req):
     m = re.match("([^\s]+) ([^\s]+) HTTP/.*\r\n", req)
