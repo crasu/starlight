@@ -78,7 +78,7 @@ def handle_http(s, levels):
     return levels
 
 def do_pwm(levels):
-    for i in range(0, 3000):
+    for i in range(0, 1500):
         for pin in PINS:
             on = False
             level = levels[pin]
